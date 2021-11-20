@@ -1,0 +1,127 @@
+
+<h1>Book</h1>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Add
+</button>
+
+<table  id="table_id" class="display">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Update</th>
+        <th>Delete</th>
+
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+
+
+</table>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form autocomplete="off" action="/book" method="post" enctype="application/x-www-form-urlencoded">
+                <div class="modal-body">
+                    <input type="text" id="addName" name="name" placeholder="Name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/book/update" method="post" enctype="application/x-www-form-urlencoded">
+                <div class="modal-body">
+
+                    <input type="text" id="editName" name="name" placeholder="Book Name">
+
+                    <input type="hidden" id="editId" name="id" value="">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready( function () {
+        $('#table_id').DataTable({
+            "processing": true,
+            "serverSide": true,
+            ajax:{
+                type: "POST",
+                url:"/book/serverside",
+                data:function (data){
+                    columnsDef:["id","name",]
+                }
+            },
+            columns:[
+                {data:'name'},
+                {data:'update'},
+                {data:'delete'},
+            ],
+            columnDefs:[
+
+                {targets:1,
+                     render:function (data,type,row,meta){
+                    var rowData=encodeURIComponent(JSON.stringify(row));
+                        return `<button  onclick="editbtn('${rowData}')">Update</button>`
+                     }
+                },
+                {targets:2,
+                    render:function (data,type,row,meta){
+                        return `<a href="/book/delete/${row._id}" onclick="return confirm('Are you sure to delete this record ?');">Delete</a>`
+
+                    }
+                }
+            ]
+        });
+    } );
+    function editbtn(id){
+        var data=JSON.parse(decodeURIComponent(id));
+        $("#editName").val(data.name)
+        $("#editId").val(data._id)
+        $("#exampleModalEdit").modal("show");
+    }
+
+    function deletebtn(id){
+
+    }
+
+    // function addbtn(){
+    //     $("#exampleModal").modal("show");
+    // }
+
+</script>
