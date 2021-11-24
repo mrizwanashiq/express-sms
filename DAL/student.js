@@ -23,6 +23,65 @@ var studentDal={
                     as:"book_name"
                 }
             },
+            // {
+            //     $lookup:{
+            //         from:"books",
+            //         let:{bookId:"$_id"},
+            //         pipeline:[{$match: { $expr: { $eq: ["$bookId", "$$bookId"] }}},
+            //             {
+            //                 $lookup:{
+            //                     from:"productitems",
+            //                     let:{itemId:"$itemId"},
+            //                     pipeline:[{$match: { $expr: { $eq: ["$_id", "$$itemId"] }}},
+            //                     ],
+            //                     as:"productName",
+            //                 }
+            //             },
+            //             { $unwind : { path: "$productName", preserveNullAndEmptyArrays: true } },
+            //         ],
+            //         as:"bookData",
+            //     },
+            // },
+            { "$unwind": "$address" }
+            // {   $unwind:"book_name" },
+        ]).then(function (data){
+            var obj={message:"success",data:data}
+            callback(obj)
+        }).catch(function (err){
+            var obj={message:"error",data:err.message}
+            callback(obj)
+        })
+    },
+    getAllNew:function (callback){
+        student.aggregate([
+            {
+                $lookup:{
+                    from:"classes",
+                    let:{classid:"$class_id"},
+                    pipeline:[
+                        {
+                            $match: { $expr: { $eq: ["$_id", "$$classid"] }}},
+                        {
+                            $lookup:{
+                                from:"teachers",
+                                let:{teacher:"$itemId"},
+                                pipeline:[{$match: { $expr: { $eq: ["$_id", "$$itemId"] }}},
+                                ],
+                                as:"productName",
+                            }
+                        },
+                        { $unwind : { path: "$productName", preserveNullAndEmptyArrays: true } },
+                    ],
+                    as:"bookData",
+                },
+            },{
+                $lookup:{
+                    from:"books",
+                    localField:"book_id",
+                    foreignField:"_id",
+                    as:"book_name"
+                }
+            },
             { "$lookup": {
                     "from": "classes",
                     "let": { "classid": "$_id" },

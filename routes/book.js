@@ -8,6 +8,8 @@ router.get("/",function (req,res){
 
 })
 
+
+
 router.post("/",function (req,res){
     bookBal.add(req.body,function (data, err){
         bookBal.getAll(function (data, err) {
