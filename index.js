@@ -15,6 +15,7 @@ app.use(bodyParser.json())
 const book = require("./routes/book");
 app.use("/book",book);
 
+
 const school = require("./routes/school");
 app.use("/school",school);
 
