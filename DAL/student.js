@@ -1,26 +1,26 @@
-var student=require("../models/student");
-var db=require("../utility/conn");
+const student = require("../models/student");
+const db = require("../utility/conn");
 const mongoose = require("mongoose");
 const school = require("../models/school");
 
-var studentDal={
-    getAll:function (callback){
+const studentDal = {
+    getAll: function (callback) {
         student.aggregate([
             {
-                $lookup:{
-                    from:"classes",
-                    localField:"class_id",
-                    foreignField:"_id",
-                    as:"class_name"
+                $lookup: {
+                    from: "classes",
+                    localField: "class_id",
+                    foreignField: "_id",
+                    as: "class_name"
                 }
             },
             // {   $unwind:"class_name" },
             {
-                $lookup:{
-                    from:"books",
-                    localField:"book_id",
-                    foreignField:"_id",
-                    as:"book_name"
+                $lookup: {
+                    from: "books",
+                    localField: "book_id",
+                    foreignField: "_id",
+                    as: "book_name"
                 }
             },
             // {
@@ -44,129 +44,135 @@ var studentDal={
             // },
             { "$unwind": "$address" }
             // {   $unwind:"book_name" },
-        ]).then(function (data){
-            var obj={message:"success",data:data}
+        ]).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
     },
-    getAllNew:function (callback){
+    getAllNew: function (callback) {
         student.aggregate([
             {
-                $lookup:{
-                    from:"classes",
-                    let:{classid:"$class_id"},
-                    pipeline:[
+                $lookup: {
+                    from: "classes",
+                    let: { classid: "$class_id" },
+                    pipeline: [
                         {
-                            $match: { $expr: { $eq: ["$_id", "$$classid"] }}},
+                            $match: { $expr: { $eq: ["$_id", "$$classid"] } }
+                        },
                         {
-                            $lookup:{
-                                from:"teachers",
-                                let:{teacher:"$itemId"},
-                                pipeline:[{$match: { $expr: { $eq: ["$_id", "$$itemId"] }}},
+                            $lookup: {
+                                from: "teachers",
+                                let: { teacher: "$itemId" },
+                                pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$itemId"] } } },
                                 ],
-                                as:"productName",
+                                as: "productName",
                             }
                         },
-                        { $unwind : { path: "$productName", preserveNullAndEmptyArrays: true } },
+                        { $unwind: { path: "$productName", preserveNullAndEmptyArrays: true } },
                     ],
-                    as:"bookData",
+                    as: "bookData",
                 },
-            },{
-                $lookup:{
-                    from:"books",
-                    localField:"book_id",
-                    foreignField:"_id",
-                    as:"book_name"
+            }, {
+                $lookup: {
+                    from: "books",
+                    localField: "book_id",
+                    foreignField: "_id",
+                    as: "book_name"
                 }
             },
-            { "$lookup": {
+            {
+                "$lookup": {
                     "from": "classes",
                     "let": { "classid": "$_id" },
                     "pipeline": [
-                        { "$match": { "$expr": { "$eq": ["$party_id", "$$classid"] }}},
-                        { "$lookup": {
+                        { "$match": { "$expr": { "$eq": ["$party_id", "$$classid"] } } },
+                        {
+                            "$lookup": {
                                 "from": "addressComment",
                                 "let": { "addressId": "$_id" },
                                 "pipeline": [
-                                    { "$match": { "$expr": { "$eq": ["$address_id", "$$addressId"] }}}
+                                    { "$match": { "$expr": { "$eq": ["$address_id", "$$addressId"] } } }
                                 ],
                                 "as": "address"
-                            }}
+                            }
+                        }
                     ],
                     "as": "address"
-                }},
+                }
+            },
             { "$unwind": "$address" }
             // {   $unwind:"book_name" },
-        ]).then(function (data){
-            var obj={message:"success",data:data}
+        ]).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
     },
 
-    add:function (body, callback){
-        var userObj=new student({
+    add: function (body, callback) {
+        const userObj = new student({
             name: body.name,
-            class_id:body.class_id,
-            book_id:body.book_id,
+            class_id: body.class_id,
+            book_id: body.book_id,
             roll: body.roll,
             registration: body.registration,
 
         });
         userObj.save().then(function (savedData) {
-            var data={message:"success",data:savedData}
+            const data = { message: "success", data: savedData }
             callback(data)
 
         }).catch(function (err) {
-            var arr={message:"error",data:err.message}
+            const arr = { message: "error", data: err.message }
             callback(arr);
         })
     },
 
-    update:function (body,callback){
+    update: function (body, callback) {
         student.updateOne(
-            { "_id" : body.id },
-            { $set: {
+            { "_id": body.id },
+            {
+                $set: {
                     name: body.name,
-                    class_id:body.class_id,
-                    book_id:body.book_id,
+                    class_id: body.class_id,
+                    book_id: body.book_id,
                     roll: body.roll,
                     registration: body.registration,
-                } ,
+                },
             },
-            {runValidators: true}
+            { runValidators: true }
         ).then(function (updateDate) {
-            var data={message:"success",data:updateDate}
+            const data = { message: "success", data: updateDate }
             callback(data)
         }).catch(function (err) {
-            var data={message:"error",data:err.message}
+            const data = { message: "error", data: err.message }
             callback(data);
         });
 
         // user.findOneAndUpdate({ _id: id.body._id }, id.body, { new: true }, (data, doc) => {
-        //     var obj={message:"success",data:data}
+        //     const obj={message:"success",data:data}
         //     callback(obj)
         //
         // }).catch(function (err){
-        //     var obj={message:"error",data:err.message}
+        //     const obj={message:"error",data:err.message}
         //     callback(obj)
         // });
     },
-    removeById:function (id,callback){
-        student.findByIdAndRemove(id).then(function (data){
-            var obj={message:"success",data:data}
+    removeById: function (id, callback) {
+        student.findByIdAndRemove(id).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
     },
 
 }
 
-module.exports=studentDal
+module.exports = studentDal

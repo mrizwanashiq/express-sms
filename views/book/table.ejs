@@ -96,7 +96,7 @@
 
                 {targets:1,
                      render:function (data,type,row,meta){
-                    var rowData=encodeURIComponent(JSON.stringify(row));
+                    const rowData=encodeURIComponent(JSON.stringify(row));
                         return `<button  onclick="editbtn('${rowData}')">Update</button>`
                      }
                 },
@@ -110,7 +110,7 @@
         });
     } );
     function editbtn(id){
-        var data=JSON.parse(decodeURIComponent(id));
+        const data=JSON.parse(decodeURIComponent(id));
         $("#editName").val(data.name)
         $("#editId").val(data._id)
         $("#exampleModalEdit").modal("show");

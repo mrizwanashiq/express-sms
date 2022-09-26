@@ -130,7 +130,7 @@
 
                 {targets:5,
                      render:function (data,type,row,meta){
-                    var rowData=encodeURIComponent(JSON.stringify(row));
+                    const rowData=encodeURIComponent(JSON.stringify(row));
                         return `<button  onclick="editbtn('${rowData}')">Update</button>`
                      }
                 },
@@ -146,7 +146,7 @@
 
     function editbtn(id){
 
-        var data=JSON.parse(decodeURIComponent(id));
+        const data=JSON.parse(decodeURIComponent(id));
         $("#editName").val(data.name)
         $("#editClass").val(data.class_id)
         $("#editBook").val(data.book_id)

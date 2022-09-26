@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-app.set("view engine",'ejs');
+app.set("view engine", 'ejs');
 const path = require("path");
-var db=require("./utility/conn");
+const db = require("./utility/conn");
 let auth = require('./auth.js');
 const expressLayouts = require('express-ejs-layouts');
 app.use(expressLayouts);
@@ -13,29 +13,29 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const book = require("./routes/book");
-app.use("/book",book);
+app.use("/book", book);
 
 
 const school = require("./routes/school");
-app.use("/school",school);
+app.use("/school", school);
 
 const clas = require("./routes/class");
-app.use("/class",clas);
+app.use("/class", clas);
 
 const teacher = require("./routes/teacher");
-app.use("/teacher",teacher);
+app.use("/teacher", teacher);
 
 const student = require("./routes/student");
-app.use("/student",student);
+app.use("/student", student);
 
 const album = require("./routes/album");
-app.use("/album",album);
+app.use("/album", album);
 
 const typeahead = require("./routes/typeahead");
-app.use("/typeahead",typeahead);
+app.use("/typeahead", typeahead);
 
 auth = require("./routes/auth");
-app.use("/auth",auth);
+app.use("/auth", auth);
 
 
 
@@ -45,7 +45,7 @@ app.use("/auth",auth);
 // const session = require('express-session');
 // const flash = require('connect-flash');
 //
-// var user=require("./models/user");
+// const user=require("./models/user");
 // app.use(flash());
 // app.user(session({secret:'test secret',resave:false,saveUninitialized:false}))
 // app.use(passport.initialize())
@@ -73,12 +73,12 @@ app.use("/auth",auth);
 //
 
 
-app.listen(3000,function (){
+app.listen(3000, function () {
     console.log("Listening at 3000")
 });
 
 
-// var express = require('express'),
+// const express = require('express'),
 //     app = express(),
 //     session = require('express-session'),
 //     flash = require('connect-flash'),
@@ -143,8 +143,8 @@ app.listen(3000,function (){
 //     })
 // );
 //
-// var server = app.listen(3000, function() {
-//     var port = server.address().port;
+// const server = app.listen(3000, function() {
+//     const port = server.address().port;
 //
 //     console.log('Server running on http://127.0.0.1:%s', port);
 // });

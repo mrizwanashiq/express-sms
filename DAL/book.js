@@ -1,139 +1,140 @@
-var book=require("../models/book");
-var db=require("../utility/conn");
+const book = require("../models/book");
+const db = require("../utility/conn");
 
-var bookDal={
-    getAll:function (callback){
+const bookDal = {
+    getAll: function (callback) {
         book.aggregate([
             {
-                $lookup:{
-                    from:"courses",
-                    localField:"_id",
-                    foreignField:"user_id",
-                    as:"course"
+                $lookup: {
+                    from: "courses",
+                    localField: "_id",
+                    foreignField: "user_id",
+                    as: "course"
                 }
             }
-        ]).then(function (data){
-            var obj={message:"success",data:data}
+        ]).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
         // user.find().then(function (data){
-        //     var obj={message:"success",data:data}
+        //     const obj={message:"success",data:data}
         //     callback(obj)
         // }).catch(function (err){
-        //     var obj={message:"error",data:err.message}
+        //     const obj={message:"error",data:err.message}
         //     callback(obj)
         // })
     },
-    getForTable:function (body, callback){
-        var search=body["search[value]"]
-        var reg=new RegExp(search,"g");
-        var sortOrder=body["order[0][dir]"];
-        var columnNumber=body["order[0][column]"]
-        var columnName=body["columns["+columnNumber+"][data]"]
-        var sortCol=sortOrder=="asc"?1:-1
-        var sortObj={};
-        sortObj[columnName]=sortCol
+    getForTable: function (body, callback) {
+        const search = body["search[value]"]
+        const reg = new RegExp(search, "g");
+        const sortOrder = body["order[0][dir]"];
+        const columnNumber = body["order[0][column]"]
+        const columnName = body["columns[" + columnNumber + "][data]"]
+        const sortCol = sortOrder == "asc" ? 1 : -1
+        const sortObj = {};
+        sortObj[columnName] = sortCol
         book.aggregate([
             // {$match:{
             //         $or:[{first_name:reg},{last_name:reg}]
             //     }
             // },
-            { $sort : sortObj },
-            { $skip : parseInt(body.start) },
-            { $limit : parseInt(body.length) },
+            { $sort: sortObj },
+            { $skip: parseInt(body.start) },
+            { $limit: parseInt(body.length) },
 
 
 
-        ]).then(function (data){
-                book.count().then(function (rows){
-                            var obj={message:"success",data:data,rows:rows}
-                            callback(obj)
-                        }).catch(function (err){
-                            var obj={message:"error",data:err.message}
-                            callback(obj)
-                        })
+        ]).then(function (data) {
+            book.count().then(function (rows) {
+                const obj = { message: "success", data: data, rows: rows }
+                callback(obj)
+            }).catch(function (err) {
+                const obj = { message: "error", data: err.message }
+                callback(obj)
+            })
 
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
 
         // user.find().skip(parseInt(body.start)).limit(parseInt(body.length)).then(function (data){
         //     user.count().then(function (rows){
-        //         var obj={message:"success",data:data,rows:rows}
+        //         const obj={message:"success",data:data,rows:rows}
         //         callback(obj)
         //     }).catch(function (err){
-        //         var obj={message:"error",data:err.message}
+        //         const obj={message:"error",data:err.message}
         //         callback(obj)
         //     })
         //
         // }).catch(function (err){
-        //     var obj={message:"error",data:err.message}
+        //     const obj={message:"error",data:err.message}
         //     callback(obj)
         // })
     },
-    add:function (body, callback){
-        var obj=new book({
+    add: function (body, callback) {
+        const obj = new book({
             name: body.name,
 
         });
         obj.save().then(function (savedData) {
-            var data={message:"success",data:savedData}
-            var s = 1;
+            const data = { message: "success", data: savedData }
+            const s = 1;
             callback(data)
 
         }).catch(function (err) {
-            var arr={message:"error",data:err.message}
+            const arr = { message: "error", data: err.message }
             callback(arr);
         })
     },
-    getById:function (id, callback){
-        book.findById(id).then(function (data){
-            var obj={message:"success",data:data}
+    getById: function (id, callback) {
+        book.findById(id).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
     },
-    update:function (body,callback){
+    update: function (body, callback) {
         book.updateOne(
-            { "_id" : body.id },
-            { $set: {
+            { "_id": body.id },
+            {
+                $set: {
                     name: body.name,
 
-                } ,
+                },
             },
-            {runValidators: true}
+            { runValidators: true }
         ).then(function (updateDate) {
-            var data={message:"success",data:updateDate}
+            const data = { message: "success", data: updateDate }
             callback(data)
         }).catch(function (err) {
-            var data={message:"error",data:err.message}
+            const data = { message: "error", data: err.message }
             callback(data);
         });
 
         // user.findOneAndUpdate({ _id: id.body._id }, id.body, { new: true }, (data, doc) => {
-        //     var obj={message:"success",data:data}
+        //     const obj={message:"success",data:data}
         //     callback(obj)
         //
         // }).catch(function (err){
-        //     var obj={message:"error",data:err.message}
+        //     const obj={message:"error",data:err.message}
         //     callback(obj)
         // });
     },
-    removeById:function (id,callback){
-        book.findByIdAndRemove(id).then(function (data){
-            var obj={message:"success",data:data}
+    removeById: function (id, callback) {
+        book.findByIdAndRemove(id).then(function (data) {
+            const obj = { message: "success", data: data }
             callback(obj)
-        }).catch(function (err){
-            var obj={message:"error",data:err.message}
+        }).catch(function (err) {
+            const obj = { message: "error", data: err.message }
             callback(obj)
         })
     },
 }
 
-module.exports=bookDal
+module.exports = bookDal
